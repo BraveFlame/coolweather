@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
 import com.coolweather.app.model.City;
+import com.coolweather.app.model.County;
 import com.coolweather.app.model.Province;
 
 import android.content.ContentValues;
@@ -114,6 +115,47 @@ public class CoolWeatherDB {
 						.getColumnIndex("city_code")));
 				city.setProvinceId(provinceId);
 				list.add(city);
+
+			} while (cursor.moveToNext());
+
+		}
+		if (cursor != null) {
+			cursor.close();
+		}
+		return list;
+
+	}
+
+	/*
+	 * 获取County实例存到数据库
+	 */
+	public void saveCounty(County county) {
+		if (county != null) {
+			ContentValues values = new ContentValues();
+			values.put("county_name", county.getCountyName());
+			values.put("county_code", county.getCountyCode());
+			values.put("City_id",county.getCityId());
+			db.insert("County", null, values);
+		}
+	}
+
+	/*
+	 * 从数据库获取某市的所有County实例
+	 */
+	public List<County> loadCounty(int cityId) {
+		List<County> list = new ArrayList<County>();
+		Cursor cursor = db.query("County", null, "city_id=?",
+				new String[] { String.valueOf(cityId) }, null, null, null);
+		if (cursor.moveToFirst()) {
+			do {
+				County county=new County();
+				county.setId(cursor.getInt(cursor.getColumnIndex("id")));
+				county.setCountyName(cursor.getString(cursor
+						.getColumnIndex("county_name")));
+				county.setCountyCode(cursor.getString(cursor
+						.getColumnIndex("county_code")));
+				county.setCityId(cityId);
+				list.add(county);
 
 			} while (cursor.moveToNext());
 
