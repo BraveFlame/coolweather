@@ -14,6 +14,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.coolweather.app.R;
+import com.coolweather.app.service.AutoUpdateService;
 import com.coolweather.app.util.HttpCallbackListener;
 import com.coolweather.app.util.HttpUtil;
 import com.coolweather.app.util.Utility;
@@ -61,14 +62,12 @@ public class WeatherActivity extends Activity implements OnClickListener {
 
 		currentDateText = (TextView) findViewById(R.id.current_date);
 		String countyCode = getIntent().getStringExtra("county_code");
-		
-		
-		switchCity=(Button)findViewById(R.id.switch_city);
-		refreshWeather=(Button)findViewById(R.id.refresh_weather);
+
+		switchCity = (Button) findViewById(R.id.switch_city);
+		refreshWeather = (Button) findViewById(R.id.refresh_weather);
 		switchCity.setOnClickListener(this);
 		refreshWeather.setOnClickListener(this);
-		
- 
+
 		if (!TextUtils.isEmpty(countyCode)) {
 			// 有县级代号就去查天气
 			publishText.setText("同步中...");
@@ -168,40 +167,35 @@ public class WeatherActivity extends Activity implements OnClickListener {
 		currentDateText.setText(pref.getString("current_date", ""));
 		weatherInfoLayout.setVisibility(View.VISIBLE);
 		cityNameText.setVisibility(View.VISIBLE);
-
+		Intent intent = new Intent(this, AutoUpdateService.class);
+		startService(intent);
 	}
 
 	@Override
 	public void onClick(View v) {
 		switch (v.getId()) {
 		case R.id.switch_city:
-			Intent intent=new Intent(this,ChooseAreaActivity.class);
+			Intent intent = new Intent(this, ChooseAreaActivity.class);
 			intent.putExtra("from_weather_activity", true);
 			startActivity(intent);
 			finish();
-			
-			
+
 			break;
 		case R.id.refresh_weather:
 			publishText.setText("同步中...");
-			SharedPreferences pref=PreferenceManager.getDefaultSharedPreferences(this);
-			String weatherCode=pref.getString("weather_code", "");
-			if(!TextUtils.isEmpty(weatherCode)){
+			SharedPreferences pref = PreferenceManager
+					.getDefaultSharedPreferences(this);
+			String weatherCode = pref.getString("weather_code", "");
+			if (!TextUtils.isEmpty(weatherCode)) {
 				queryWeatherInfo(weatherCode);
 			}
-			
+
 			break;
-			
+
 		default:
 			break;
 		}
-		
+
 	}
 
-
-
 }
-
-	
-
-
