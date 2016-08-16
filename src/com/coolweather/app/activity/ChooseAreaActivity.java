@@ -46,7 +46,7 @@ public class ChooseAreaActivity extends Activity {
 	 * 省市县列表
 	 */
 	private List<Province> provinceList;
-	private List<City> cityList ;
+	private List<City> cityList;
 	private List<County> countyList;
 	/*
 	 * 选中的省份，城市
@@ -58,14 +58,20 @@ public class ChooseAreaActivity extends Activity {
 	 */
 
 	private int currentLevel;
+	/*
+	 * 标志位判断是不是第一次选择城市，作为跳转城市用
+	 */
+	private boolean isFromWeatherActivity;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		isFromWeatherActivity = getIntent().getBooleanExtra(
+				"from_weather_activity", false);
 		SharedPreferences pref = PreferenceManager
 				.getDefaultSharedPreferences(this);
-
-		if (pref.getBoolean("city_selected", false)) {
+		// 判断已选择城市是不是从WeatherActivity过来，不是才直接跳转
+		if (pref.getBoolean("city_selected", false)&&!isFromWeatherActivity) {
 			Intent intent = new Intent(this, WeatherActivity.class);
 			startActivity(intent);
 			finish();
@@ -97,7 +103,7 @@ public class ChooseAreaActivity extends Activity {
 							WeatherActivity.class);
 					intent.putExtra("county_code", countyCode);
 					startActivity(intent);
-					finish(); 
+					finish();
 				}
 			}
 		});
@@ -243,7 +249,7 @@ public class ChooseAreaActivity extends Activity {
 	}
 
 	/**
-	 * 捕获Back按键，根据当前的级别来判断，此时应该返回市列表、省列表、还是直接退出。 第一行代码 —— Android 506
+	 * 捕获Back按键，根据当前的级别来判断，此时应该返回市列表、省列表、还是直接退出。
 	 */
 	@Override
 	public void onBackPressed() {
@@ -252,6 +258,10 @@ public class ChooseAreaActivity extends Activity {
 		} else if (currentLevel == LEVEL_CITY) {
 			queryProvinces();
 		} else {
+			if (isFromWeatherActivity) {
+				Intent intent = new Intent(this, WeatherActivity.class);
+				startActivity(intent);
+			}
 			finish();
 		}
 
