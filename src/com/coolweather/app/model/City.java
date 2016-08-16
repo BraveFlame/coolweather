@@ -4,6 +4,7 @@ public class City {
 	private int id;
 	private String cityName;
 	private String cityCode;
+	private int provinceId;
 
 	public int getId() {
 		return id;
@@ -37,6 +38,6 @@ public class City {
 		this.provinceId = provinceId;
 	}
 
-	private int provinceId;
+
 
 }

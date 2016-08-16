@@ -14,7 +14,10 @@ import com.coolweather.app.util.Utility;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.Window;
@@ -42,9 +45,9 @@ public class ChooseAreaActivity extends Activity {
 	/*
 	 * 省市县列表
 	 */
-	private List<Province> provinceList=new ArrayList<Province>();
-	private List<City> cityList=new ArrayList<City>();
-	private List<County> countyList=new ArrayList<County>();
+	private List<Province> provinceList;
+	private List<City> cityList ;
+	private List<County> countyList;
 	/*
 	 * 选中的省份，城市
 	 */
@@ -59,10 +62,20 @@ public class ChooseAreaActivity extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		SharedPreferences pref = PreferenceManager
+				.getDefaultSharedPreferences(this);
+
+		if (pref.getBoolean("city_selected", false)) {
+			Intent intent = new Intent(this, WeatherActivity.class);
+			startActivity(intent);
+			finish();
+			return;
+		}
+
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.choose_area);
 		listView = (ListView) findViewById(R.id.list_view);
-		
+
 		titleText = (TextView) findViewById(R.id.title_text);
 		adapter = new ArrayAdapter<String>(this,
 				android.R.layout.simple_list_item_1, dataList);
@@ -78,6 +91,13 @@ public class ChooseAreaActivity extends Activity {
 				} else if (currentLevel == LEVEL_CITY) {
 					selectedCity = cityList.get(index);
 					queryCounties();
+				} else if (currentLevel == LEVEL_COUNTY) {
+					String countyCode = countyList.get(index).getCountyCode();
+					Intent intent = new Intent(ChooseAreaActivity.this,
+							WeatherActivity.class);
+					intent.putExtra("county_code", countyCode);
+					startActivity(intent);
+					finish(); 
 				}
 			}
 		});
